@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>연서사대부고 학생증 생성기</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url(https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;900&family=Pretendard:wght@300;500;700&family=Libre+Barcode+39+Text&display=swap);
+
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Pretendard, sans-serif;
+            color: #333;
+        }
+
+        /* --- 상단 홍보 섹션 --- */
+        .promo-container {
+            width: 100%;
+            background: #fff;
+            padding: 15px 0;
+            border-bottom: 2px solid #580816;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .promo-content { width: 90%; max-width: 1000px; display: flex; flex-direction: column; gap: 12px; }
+        .promo-title { font-size: 16px; font-weight: 700; color: #580816; margin: 0; }
+        .promo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .chat-card { background: #fdf2f2; border-radius: 10px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eccaca; text-decoration: none; transition: 0.2s; }
+        .chat-info h4 { margin: 0; font-size: 14px; color: #333; }
+        .chat-info p { margin: 2px 0 0; font-size: 11px; color: #888; }
+        .chat-btn { background: #580816; color: white; padding: 6px 12px; border-radius: 15px; font-size: 11px; font-weight: 600; }
+
+        /* --- 메인 영역 --- */
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            padding: 20px;
+            width: 95%;
+            max-width: 1100px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 800px) {
+            .main-content { flex-direction: column; align-items: center; }
+            .controls { width: 100% !important; order: 2; }
+            .preview-container { width: 100%; order: 1; display: flex; justify-content: center; overflow: hidden; padding: 10px 0; }
+            #capture-area { transform: scale(0.65); transform-origin: top center; margin-bottom: -110px; }
+        }
+
+        .controls { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 380px; box-sizing: border-box; }
+        .controls h2 { margin-top: 0; color: #580816; font-size: 18px; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+        .input-group label { font-size: 12px; color: #666; font-weight: 700; }
+        .input-group input, .input-group select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        .save-btn { width: 100%; padding: 15px; background: #580816; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px; margin-top: 10px; }
+
+        /* --- 학생증 디자인 --- */
+        #capture-area { padding: 10px; background: transparent; }
+        .id-card {
+            width: 520px; height: 325px;
+            background: linear-gradient(135deg, #580816 0, #2b040a 100%);
+            border-radius: 18px; position: relative; overflow: hidden; padding: 24px; box-sizing: border-box;
+            color: #fff; border: 1px solid #7a1f2e;
+        }
+        .bg-pattern { position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 175, 55, .1) 0, rgba(0, 0, 0, 0) 70%); border-radius: 50%; pointer-events: none; }
+        .watermark-text { position: absolute; bottom: 10px; right: 20px; font-family: 'Noto Serif KR', serif; font-size: 80px; font-weight: 900; color: rgba(255, 255, 255, .03); z-index: 0; pointer-events: none; line-height: .8; text-align: right; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; position: relative; z-index: 2; border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
+        .school-name { font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 700; color: #d4af37; display: flex; flex-direction: column; }
+        .school-name span { font-size: 10px; color: #bfa365; letter-spacing: 2px; margin-top: 2px; }
+        .card-type { background: rgba(212, 175, 55, .2); border: 1px solid #d4af37; color: #d4af37; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        
+        .content { display: flex; gap: 20px; position: relative; z-index: 2; }
+        /* 사진 프레임 핵심 수정: 고정 크기 및 강제 비율 유지 */
+        .photo-frame { 
+            width: 120px; height: 155px; min-width: 120px; min-height: 155px;
+            background-color: #dcdcdc; border: 2px solid #d4af37; border-radius: 6px; 
+            display: flex; justify-content: center; align-items: center; overflow: hidden; 
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.3);
+        }
+        #preview-img { 
+            width: 100% !important; height: 100% !important; 
+            object-fit: cover !important; /* 비율 유지하며 채우기 */
+            display: none; 
+        }
+        .photo-placeholder { color: #555; font-size: 10px; font-weight: 700; text-align: center; }
+
+        .name-kr { font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 2px; }
+        .name-en { font-size: 12px; color: #d4af37; font-weight: 500; text-transform: uppercase; }
+        .detail-table { width: 100%; font-size: 13px; margin-top: 10px; }
+        .detail-row { display: flex; margin-bottom: 5px; }
+        .label { color: #aaa; width: 60px; font-size: 11px; }
+        .value { color: #fff; font-weight: 500; }
+        .track-badge { display: inline-block; background: #2a4d69; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-left: 5px; }
+        .dorm-highlight { color: gold; font-weight: 700; }
+        .footer { position: absolute; bottom: 20px; right: 24px; left: 24px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+        .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 26px; color: #eee; opacity: .9; }
+        .issue-date { font-size: 9px; color: #aaa; }
+        .stamp-box { display: flex; flex-direction: column; align-items: flex-end; position: relative; }
+        .principal { font-family: 'Noto Serif KR', serif; font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 5px; z-index: 2; }
+        .stamp-graphic { position: absolute; bottom: -5px; right: -5px; width: 45px; height: 45px; border: 2.5px solid #d00000; border-radius: 4px; transform: rotate(-5deg); background: rgba(100,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 1; }
+        .stamp-inner { font-family: 'Noto Serif KR', serif; font-size: 10px; color: #d00000; font-weight: 900; line-height: 1.2; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="promo-container">
+        <div class="promo-content">
+            <h3 class="promo-title">✨ 연서사대부고 캐릭터 채팅</h3>
+            <div class="promo-grid">
+                <a href="https://bloom-ai.me/content/dde6f48f-5e3d-4434-9dd2-2f133427b69b" target="_blank" class="chat-card">
+                    <div class="chat-info">
+                        <h4>블룸(Bloom) - 유재민</h4>
+                        <p>지금 바로 대화 시작하기</p>
+                    </div>
+                    <div class="chat-btn">GO</div>
+                </a>
+                <div class="chat-card" style="opacity: 0.6;">
+                    <div class="chat-info">
+                        <h4>케이브덕(Caveduck)</h4>
+                        <p>곧 출시될 예정입니다!</p>
+                    </div>
+                    <div class="chat-btn" style="background: #666;">COMING</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="preview-container">
+            <div id="capture-area">
+                <div class="id-card" id="student-card">
+                    <div class="bg-pattern"></div>
+                    <div class="watermark-text">YS <br>HIGH </div>
+                    <div class="header">
+                        <div class="school-name">연서대학교 사범대학 부속 고등학교 <span>YEONSEO UNIVERSITY HIGH SCHOOL</span></div>
+                        <div class="card-type">STUDENT ID</div>
+                    </div>
+                    <div class="content">
+                        <div class="photo-frame">
+                            <img id="preview-img" src="" alt="학생 사진">
+                            <div class="photo-placeholder" id="placeholder-text">PHOTO<br>3.5 x 4.5</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="name-section">
+                                <div class="name-kr" id="out-name-kr">성 명</div>
+                                <div class="name-en" id="out-name-en">NAME</div>
+                            </div>
+                            <div class="detail-table">
+                                <div class="detail-row"><span class="label">학번/소속</span><span class="value" id="out-class">-</span></div>
+                                <div class="detail-row"><span class="label">계열선택</span><span class="value"><span id="out-track-full">-</span> <span class="track-badge" id="out-track-short" style="display:none;">-</span></span></div>
+                                <div class="detail-row"><span class="label">생년월일</span><span class="value" id="out-birth">-</span></div>
+                                <div class="detail-row" style="margin-top:5px"><span class="label" style="color:#d4af37">생활관</span><span class="value dorm-highlight" id="out-dorm">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="barcode-group">
+                            <div class="issue-date" id="out-issue-date">발급일: 2025.03.02.</div>
+                            <div class="barcode" id="out-barcode">**</div>
+                        </div>
+                        <div class="stamp-box">
+                            <div class="principal">연서사대부고 학교장</div>
+                            <div class="stamp-graphic"><div class="stamp-inner">衍舒師大<br>附高校長印</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h2>학생증 정보 입력</h2>
+            <div class="input-group">
+                <label>학생 사진 업로드</label>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label>한글 성명</label>
+                <input type="text" id="in-name-kr" placeholder="예: 유재민">
+            </div>
+            <div class="input-group">
+                <label>영문 성명</label>
+                <input type="text" id="in-name-en" placeholder="예: YOO JAE-MIN">
+            </div>
+            <div class="input-group">
+                <label>학번 및 소속</label>
+                <input type="text" id="in-class" placeholder="예: 2학년 1반 17번">
+            </div>
+            <div class="input-group">
+                <label>생년월일 (2009.03.25.)</label>
+                <input type="text" id="in-birth" placeholder="예: 2009.03.25.">
+            </div>
+            <div class="input-group">
+                <label>계열 선택</label>
+                <select id="in-track">
+                    <option value="">--- 선택 ---</option>
+                    <option value="자연계열 (Science)|이과">자연계열 (이과)</option>
+                    <option value="인문계열 (Humanities)|문과">인문계열 (문과)</option>
+                    <option value="예체능계열 (Arts/Sports)|예체능">예체능계열</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>생활관 호실</label>
+                <input type="text" id="in-dorm" placeholder="예: 세명관 301호">
+            </div>
+            <button class="save-btn" onclick="saveCard()">학생증 이미지 저장하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 사진 업로드 및 비율 최적화
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = document.getElementById('preview-img');
+                    img.src = event.target.result;
+                    img.style.display = 'block';
+                    document.getElementById('placeholder-text').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 텍스트 실시간 연동
+        const mapping = [
+            {in: 'in-name-kr', out: 'out-name-kr'},
+            {in: 'in-name-en', out: 'out-name-en'},
+            {in: 'in-class', out: 'out-class'},
+            {in: 'in-birth', out: 'out-birth'},
+            {in: 'in-dorm', out: 'out-dorm'}
+        ];
+
+        mapping.forEach(item => {
+            document.getElementById(item.in).addEventListener('input', function() {
+                document.getElementById(item.out).innerText = this.value || '-';
+                if(item.in === 'in-birth') {
+                    const raw = this.value.replace(/[^0-9]/g, '');
+                    document.getElementById('out-barcode').innerText = raw ? `*${raw}*` : '**';
+                }
+            });
+        });
+
+        // 계열 선택 로직 (숨김 처리 포함)
+        document.getElementById('in-track').addEventListener('change', function() {
+            const badge = document.getElementById('out-track-short');
+            if (this.value === "") {
+                document.getElementById('out-track-full').innerText = "-";
+                badge.style.display = "none";
+            } else {
+                const parts = this.value.split('|');
+                document.getElementById('out-track-full').innerText = parts[0];
+                badge.innerText = parts[1];
+                badge.style.display = "inline-block";
+            }
+        });
+
+        // 저장 함수 (캡처 시 비율 깨짐 방지)
+        function saveCard() {
+            const area = document.getElementById('capture-area');
+            const originalTransform = area.style.transform;
+            
+            html2canvas(area, {
+                backgroundColor: null,
+                scale: 3, // 고해상도
+                useCORS: true,
+                logging: false,
+                onclone: (clonedDoc) => {
+                    const clonedArea = clonedDoc.getElementById('capture-area');
+                    clonedArea.style.transform = 'none'; // 캡처 시에는 축소 해제
+                }
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `YS_ID_${document.getElementById('in-name-kr').value || 'Student'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // 발급일 초기화
+        const d = new Date();
+        document.getElementById('out-issue-date').innerText = `발급일: ${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}.`;
+    </script>
+</body>
+</html>
