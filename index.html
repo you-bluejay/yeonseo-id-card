@@ -16,7 +16,6 @@
             min-height: 100vh;
             margin: 0;
             font-family: Pretendard, sans-serif;
-            color: #333;
         }
 
         /* --- 상단 홍보 섹션 --- */
@@ -76,37 +75,98 @@
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; position: relative; z-index: 2; border-bottom: 2px solid #d4af37; padding-bottom: 10px; }
         .school-name { font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 700; color: #d4af37; display: flex; flex-direction: column; }
         .school-name span { font-size: 10px; color: #bfa365; letter-spacing: 2px; margin-top: 2px; }
-        .card-type { background: rgba(212, 175, 55, .2); border: 1px solid #d4af37; color: #d4af37; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        
+        .card-type { 
+            background: rgba(212, 175, 55, .2); 
+            border: 1px solid #d4af37; 
+            color: #d4af37; 
+            font-size: 10px; 
+            font-weight: 700; 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            letter-spacing: 1.5px; /* STUDENT ID 자간 확보 */
+        }
         
         .content { display: flex; gap: 20px; position: relative; z-index: 2; }
-        /* 사진 프레임 핵심 수정: 고정 크기 및 강제 비율 유지 */
+
         .photo-frame { 
-            width: 120px; height: 155px; min-width: 120px; min-height: 155px;
-            background-color: #dcdcdc; border: 2px solid #d4af37; border-radius: 6px; 
-            display: flex; justify-content: center; align-items: center; overflow: hidden; 
+            width: 120px; height: 155px;
+            background-color: #222;
+            border: 2px solid #d4af37; border-radius: 6px; 
+            display: flex; justify-content: center; align-items: center; 
+            overflow: hidden; 
             box-shadow: 4px 4px 15px rgba(0,0,0,0.3);
         }
         #preview-img { 
-            width: 100% !important; height: 100% !important; 
-            object-fit: cover !important; /* 비율 유지하며 채우기 */
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
             display: none; 
         }
-        .photo-placeholder { color: #555; font-size: 10px; font-weight: 700; text-align: center; }
+        .photo-placeholder { color: #888; font-size: 10px; font-weight: 700; text-align: center; }
 
         .name-kr { font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 2px; }
-        .name-en { font-size: 12px; color: #d4af37; font-weight: 500; text-transform: uppercase; }
+        
+        /* 영어 이름: 띄어쓰기 및 자간 강제 설정 */
+        .name-en { 
+            font-size: 12px; 
+            color: #d4af37; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            white-space: pre-wrap; /* 띄어쓰기 보존 핵심 */
+            letter-spacing: 1.2px;
+            word-spacing: 4px;
+        }
+
         .detail-table { width: 100%; font-size: 13px; margin-top: 10px; }
-        .detail-row { display: flex; margin-bottom: 5px; }
+        .detail-row { display: flex; margin-bottom: 5px; align-items: center; }
         .label { color: #aaa; width: 60px; font-size: 11px; }
-        .value { color: #fff; font-weight: 500; }
-        .track-badge { display: inline-block; background: #2a4d69; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-left: 5px; }
+        
+        /* 값: 마침표 잘림 방지를 위한 패딩 및 자간 */
+        .value { 
+            color: #fff; 
+            font-weight: 500; 
+            letter-spacing: 0.8px; 
+            padding-right: 8px; /* 끝부분 마침표 여백 확보 */
+        }
+        
+        #out-track-full { letter-spacing: 0.5px; padding-right: 2px; }
+        
+        .track-badge { display: inline-block; background: #2a4d69; color: #fff; font-size: 9px; padding: 1px 5px; border-radius: 4px; margin-left: 5px; vertical-align: middle; }
         .dorm-highlight { color: gold; font-weight: 700; }
         .footer { position: absolute; bottom: 20px; right: 24px; left: 24px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
-        .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 26px; color: #eee; opacity: .9; }
-        .issue-date { font-size: 9px; color: #aaa; }
+        .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 26px; color: #eee; opacity: .9; letter-spacing: 2px; }
+        
+        /* 발급일: 마침표 넉넉한 여백 */
+        .issue-date { font-size: 9px; color: #aaa; padding-right: 15px; letter-spacing: 0.5px; }
+        
         .stamp-box { display: flex; flex-direction: column; align-items: flex-end; position: relative; }
-        .principal { font-family: 'Noto Serif KR', serif; font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 5px; z-index: 2; }
-        .stamp-graphic { position: absolute; bottom: -5px; right: -5px; width: 45px; height: 45px; border: 2.5px solid #d00000; border-radius: 4px; transform: rotate(-5deg); background: rgba(100,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 1; }
+        .principal { 
+            font-family: 'Noto Serif KR', serif; 
+            font-size: 12px; 
+            font-weight: 700; 
+            color: #fff; 
+            margin-bottom: 5px; 
+            position: relative;
+            z-index: 5; 
+            letter-spacing: 1px;
+        }
+        .stamp-graphic { 
+            position: absolute; 
+            bottom: -5px; 
+            right: -5px; 
+            width: 45px; 
+            height: 45px; 
+            border: 2.5px solid #d00000; 
+            border-radius: 4px; 
+            transform: rotate(-5deg); 
+            background: rgba(208, 0, 0, 0.1); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1; 
+            opacity: 0.8;
+        }
         .stamp-inner { font-family: 'Noto Serif KR', serif; font-size: 10px; color: #d00000; font-weight: 900; line-height: 1.2; text-align: center; }
     </style>
 </head>
@@ -147,7 +207,7 @@
                     <div class="content">
                         <div class="photo-frame">
                             <img id="preview-img" src="" alt="학생 사진">
-                            <div class="photo-placeholder" id="placeholder-text">PHOTO<br>3.5 x 4.5</div>
+                            <div class="photo-placeholder" id="placeholder-text">PHOTO<br>원본비율 유지</div>
                         </div>
                         <div class="info-group">
                             <div class="name-section">
@@ -156,7 +216,7 @@
                             </div>
                             <div class="detail-table">
                                 <div class="detail-row"><span class="label">학번/소속</span><span class="value" id="out-class">-</span></div>
-                                <div class="detail-row"><span class="label">계열선택</span><span class="value"><span id="out-track-full">-</span> <span class="track-badge" id="out-track-short" style="display:none;">-</span></span></div>
+                                <div class="detail-row"><span class="label">계열선택</span><span class="value"><span id="out-track-full">-</span><span class="track-badge" id="out-track-short" style="display:none;">-</span></span></div>
                                 <div class="detail-row"><span class="label">생년월일</span><span class="value" id="out-birth">-</span></div>
                                 <div class="detail-row" style="margin-top:5px"><span class="label" style="color:#d4af37">생활관</span><span class="value dorm-highlight" id="out-dorm">-</span></div>
                             </div>
@@ -169,7 +229,7 @@
                         </div>
                         <div class="stamp-box">
                             <div class="principal">연서사대부고 학교장</div>
-                            <div class="stamp-graphic"><div class="stamp-inner">衍舒師大<br>附高校長印</div></div>
+                            <div class="stamp-graphic"><div class="stamp-inner">衍舒師範<br>大學附屬<br>高校長印</div></div>
                         </div>
                     </div>
                 </div>
@@ -195,7 +255,7 @@
                 <input type="text" id="in-class" placeholder="예: 2학년 1반 17번">
             </div>
             <div class="input-group">
-                <label>생년월일 (2009.03.25.)</label>
+                <label>생년월일</label>
                 <input type="text" id="in-birth" placeholder="예: 2009.03.25.">
             </div>
             <div class="input-group">
@@ -209,14 +269,13 @@
             </div>
             <div class="input-group">
                 <label>생활관 호실</label>
-                <input type="text" id="in-dorm" placeholder="예: 세명관 301호">
+                <input type="text" id="in-dorm" placeholder="예: 세명관 301호, 해당없음">
             </div>
             <button class="save-btn" onclick="saveCard()">학생증 이미지 저장하기</button>
         </div>
     </div>
 
     <script>
-        // 사진 업로드 및 비율 최적화
         document.getElementById('imageInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -231,7 +290,6 @@
             }
         });
 
-        // 텍스트 실시간 연동
         const mapping = [
             {in: 'in-name-kr', out: 'out-name-kr'},
             {in: 'in-name-en', out: 'out-name-en'},
@@ -242,7 +300,12 @@
 
         mapping.forEach(item => {
             document.getElementById(item.in).addEventListener('input', function() {
-                document.getElementById(item.out).innerText = this.value || '-';
+                // 초기값이 아니라 입력된 값이 있다면 그것을 사용, 없다면 기본 placeholder 유지
+                const initialText = item.in.includes('name-kr') ? '성 명' : 
+                                  item.in.includes('name-en') ? 'NAME' : '-';
+                
+                document.getElementById(item.out).innerText = this.value || initialText;
+
                 if(item.in === 'in-birth') {
                     const raw = this.value.replace(/[^0-9]/g, '');
                     document.getElementById('out-barcode').innerText = raw ? `*${raw}*` : '**';
@@ -250,7 +313,6 @@
             });
         });
 
-        // 계열 선택 로직 (숨김 처리 포함)
         document.getElementById('in-track').addEventListener('change', function() {
             const badge = document.getElementById('out-track-short');
             if (this.value === "") {
@@ -264,29 +326,46 @@
             }
         });
 
-        // 저장 함수 (캡처 시 비율 깨짐 방지)
         function saveCard() {
             const area = document.getElementById('capture-area');
-            const originalTransform = area.style.transform;
             
             html2canvas(area, {
                 backgroundColor: null,
-                scale: 3, // 고해상도
+                scale: 4, 
                 useCORS: true,
-                logging: false,
+                letterRendering: true, 
                 onclone: (clonedDoc) => {
-                    const clonedArea = clonedDoc.getElementById('capture-area');
-                    clonedArea.style.transform = 'none'; // 캡처 시에는 축소 해제
+                    clonedDoc.getElementById('capture-area').style.transform = 'none';
+                    
+                    // [핵심 수정] 캡처 시점에만 강제로 자간을 넓혀서 저장된 이미지 뭉침 방지
+                    const nameEn = clonedDoc.getElementById('out-name-en');
+                    const values = clonedDoc.querySelectorAll('.value');
+                    const issueDate = clonedDoc.getElementById('out-issue-date');
+                    
+                    if(nameEn) {
+                        nameEn.style.letterSpacing = '1.5px'; 
+                        nameEn.style.wordSpacing = '6px'; // 단어 간격 더 확보
+                    }
+                    
+                    if(issueDate) {
+                         issueDate.style.letterSpacing = '1px';
+                         issueDate.style.paddingRight = '20px'; // 날짜 끝 잘림 방지
+                    }
+
+                    values.forEach(val => {
+                        val.style.letterSpacing = '1px'; // 숫자끼리 붙는 것 방지
+                    });
                 }
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `YS_ID_${document.getElementById('in-name-kr').value || 'Student'}.png`;
+                // 파일명 기본값 처리
+                const filename = document.getElementById('in-name-kr').value || 'Student';
+                link.download = `YS_ID_${filename}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             });
         }
 
-        // 발급일 초기화
         const d = new Date();
         document.getElementById('out-issue-date').innerText = `발급일: ${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}.`;
     </script>
