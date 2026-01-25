@@ -84,7 +84,7 @@
             font-weight: 700; 
             padding: 4px 10px; 
             border-radius: 20px; 
-            letter-spacing: 1.5px; /* STUDENT ID 자간 확보 */
+            letter-spacing: 1.5px;
         }
         
         .content { display: flex; gap: 20px; position: relative; z-index: 2; }
@@ -107,13 +107,12 @@
 
         .name-kr { font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 2px; }
         
-        /* 영어 이름: 띄어쓰기 및 자간 강제 설정 */
         .name-en { 
             font-size: 12px; 
             color: #d4af37; 
             font-weight: 500; 
             text-transform: uppercase; 
-            white-space: pre-wrap; /* 띄어쓰기 보존 핵심 */
+            white-space: pre-wrap;
             letter-spacing: 1.2px;
             word-spacing: 4px;
         }
@@ -122,12 +121,11 @@
         .detail-row { display: flex; margin-bottom: 5px; align-items: center; }
         .label { color: #aaa; width: 60px; font-size: 11px; }
         
-        /* 값: 마침표 잘림 방지를 위한 패딩 및 자간 */
         .value { 
             color: #fff; 
             font-weight: 500; 
             letter-spacing: 0.8px; 
-            padding-right: 8px; /* 끝부분 마침표 여백 확보 */
+            padding-right: 8px;
         }
         
         #out-track-full { letter-spacing: 0.5px; padding-right: 2px; }
@@ -137,7 +135,6 @@
         .footer { position: absolute; bottom: 20px; right: 24px; left: 24px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
         .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 26px; color: #eee; opacity: .9; letter-spacing: 2px; }
         
-        /* 발급일: 마침표 넉넉한 여백 */
         .issue-date { font-size: 9px; color: #aaa; padding-right: 15px; letter-spacing: 0.5px; }
         
         .stamp-box { display: flex; flex-direction: column; align-items: flex-end; position: relative; }
@@ -183,27 +180,27 @@
                     </div>
                     <div class="chat-btn">GO</div>
                 </a>
-           <a href="https://ko.cvdk.io/c/0Kyez2bTRma5CpUyqXDEwA?rc=E1RYqzTuuF" target="_blank" class="chat-card">
+                <a href="https://ko.cvdk.io/c/0Kyez2bTRma5CpUyqXDEwA?rc=E1RYqzTuuF" target="_blank" class="chat-card">
                     <div class="chat-info">
                         <h4>케이브덕(Caveduck)</h4>
                         <p>지금 바로 대화 시작하기</p>
                     </div>
                     <div class="chat-btn">GO</div>
                 </a>
-           <a href="https://rplay.love/story/6973a8b38b74b188b250d7f8" target="_blank" class="chat-card">
+                <a href="https://rplay.love/story/6973a8b38b74b188b250d7f8" target="_blank" class="chat-card">
                     <div class="chat-info">
                         <h4>로맨틱플레이(Rplay)</h4>
                         <p>지금 바로 대화 시작하기</p>
                     </div>
                     <div class="chat-btn">GO</div>
                 </a>
-                <div class="chat-card" style="opacity: 0.6;">
+                <a href="https://zeta-ai.io/ko/plots/ca4a33f6-c993-480b-ab0c-84d680ece643/profile?share_id=s4v2gn4yd" target="_blank" class="chat-card">
                     <div class="chat-info">
                         <h4>제타(Zeta)</h4>
-                        <p>곧 출시될 예정입니다!</p>
+                        <p>지금 바로 대화 시작하기</p>
                     </div>
-                    <div class="chat-btn" style="background: #666;">COMING</div>
-                </div>
+                    <div class="chat-btn">GO</div>
+                </a>
             </div>
         </div>
     </div>
@@ -314,7 +311,6 @@
 
         mapping.forEach(item => {
             document.getElementById(item.in).addEventListener('input', function() {
-                // 초기값이 아니라 입력된 값이 있다면 그것을 사용, 없다면 기본 placeholder 유지
                 const initialText = item.in.includes('name-kr') ? '성 명' : 
                                   item.in.includes('name-en') ? 'NAME' : '-';
                 
@@ -350,29 +346,26 @@
                 letterRendering: true, 
                 onclone: (clonedDoc) => {
                     clonedDoc.getElementById('capture-area').style.transform = 'none';
-                    
-                    // [핵심 수정] 캡처 시점에만 강제로 자간을 넓혀서 저장된 이미지 뭉침 방지
                     const nameEn = clonedDoc.getElementById('out-name-en');
                     const values = clonedDoc.querySelectorAll('.value');
                     const issueDate = clonedDoc.getElementById('out-issue-date');
                     
                     if(nameEn) {
                         nameEn.style.letterSpacing = '1.5px'; 
-                        nameEn.style.wordSpacing = '6px'; // 단어 간격 더 확보
+                        nameEn.style.wordSpacing = '6px';
                     }
                     
                     if(issueDate) {
                          issueDate.style.letterSpacing = '1px';
-                         issueDate.style.paddingRight = '20px'; // 날짜 끝 잘림 방지
+                         issueDate.style.paddingRight = '20px';
                     }
 
                     values.forEach(val => {
-                        val.style.letterSpacing = '1px'; // 숫자끼리 붙는 것 방지
+                        val.style.letterSpacing = '1px';
                     });
                 }
             }).then(canvas => {
                 const link = document.createElement('a');
-                // 파일명 기본값 처리
                 const filename = document.getElementById('in-name-kr').value || 'Student';
                 link.download = `YS_ID_${filename}.png`;
                 link.href = canvas.toDataURL('image/png');
